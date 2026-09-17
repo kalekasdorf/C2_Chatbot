@@ -114,11 +114,48 @@
       messages.appendChild(userMessage);
 
       // Temporary response
+      // Look for relevant resources
+      const searchText = userText.toLowerCase();
+      
+      const matches = resources.filter(function(resource) {
+        const searchableText =
+          resource.type + " " +
+          resource.name + " " +
+          resource.details;
+      
+        return searchableText.toLowerCase().includes(searchText);
+      });
+      
       const botMessage = document.createElement("div");
       botMessage.className = "message bot";
-      botMessage.textContent =
-        "Thanks! Once we connect the resource list, I'll use it to find relevant support.";
+      
+      if (matches.length > 0) {
+      
+        botMessage.textContent = "I found these potentially relevant resources:";
+      
+        matches.forEach(function(resource) {
+      
+          const resourceDiv = document.createElement("div");
+      
+          resourceDiv.innerHTML = `
+            <h3>${resource.name}</h3>
+            <p>${resource.details}</p>
+            <p>Phone: ${resource.phone}</p>
+            <p><a href="${resource.website}" target="_blank">Website</a></p>
+          `;
+      
+          botMessage.appendChild(resourceDiv);
+        });
+      
+      } else {
+      
+        botMessage.textContent =
+          "I couldn't find a resource that matches your request in the available resource list.";
+      
+      }
+      
       messages.appendChild(botMessage);
+      
 
       input.value = "";
       input.focus();
